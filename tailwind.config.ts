@@ -6,8 +6,7 @@ const config: Config = {
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
-    "./src/styles/**/*.{js,ts,jsx,tsx,mdx}", // change to your actual folder name
-    "./src/Style/**/*.{js,ts,jsx,tsx,mdx}", // add this ONLY if your folder is "Style"
+    "./src/Style/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {

@@ -2,7 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-/* your custom css below if needed */
+/* Your template's custom CSS (Bootstrap-like utility classes etc.) */
+@import "../Style/style.css";
 
 html {
   scroll-behavior: smooth;
