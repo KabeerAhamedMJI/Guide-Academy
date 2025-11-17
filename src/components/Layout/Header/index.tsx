@@ -51,11 +51,14 @@ const Header: React.FC = () => {
     };
   }, [navbarOpen, isAdmissionOpen]);
 
-  // lock body scroll when overlays open
+  // lock body scroll ONLY when mobile navbar is open
   useEffect(() => {
-    if (navbarOpen || isAdmissionOpen) document.body.style.overflow = "hidden";
-    else document.body.style.overflow = "";
-  }, [navbarOpen, isAdmissionOpen]);
+    if (navbarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [navbarOpen]);
 
   // open admission modal from other places
   useEffect(() => {
@@ -63,14 +66,6 @@ const Header: React.FC = () => {
     window.addEventListener("open-header-form", open);
     return () => window.removeEventListener("open-header-form", open);
   }, []);
-
-  // When admission opens, set date
-  useEffect(() => {
-    if (!isAdmissionOpen) return;
-    const today = new Date();
-    const formatted = today.toISOString().split("T")[0];
-    setForm((f) => ({ ...f, date: formatted }));
-  }, [isAdmissionOpen]);
 
   // When admission opens, scroll into view and focus first field
   useEffect(() => {
@@ -101,12 +96,18 @@ const Header: React.FC = () => {
   const onlyDigits = (v: string) => v.replace(/\D/g, "");
   const onChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
-    if (id === "whatsappNo" || id === "pinCode") {
+    if (id === "whatsappNo" || id === "pinCode")
       setForm((f) => ({ ...f, [id]: onlyDigits(value) }));
-    } else {
-      setForm((f) => ({ ...f, [id]: value }));
-    }
+    else setForm((f) => ({ ...f, [id]: value }));
   };
+
+  useEffect(() => {
+    if (isAdmissionOpen) {
+      const today = new Date();
+      const formatted = today.toISOString().split("T")[0];
+      setForm((f) => ({ ...f, date: formatted }));
+    }
+  }, [isAdmissionOpen]);
 
   const courses = [
     { name: "Montessori TTC", courseFee: "20,000", admissionFee: "7,500" },
@@ -134,20 +135,8 @@ const Header: React.FC = () => {
   ];
 
   const districts = [
-    "Thiruvananthapuram",
-    "Kollam",
-    "Pathanamthitta",
-    "Alappuzha",
-    "Kottayam",
-    "Idukki",
-    "Ernakulam",
-    "Thrissur",
-    "Palakkad",
-    "Malappuram",
-    "Kozhikode",
-    "Wayanad",
-    "Kannur",
-    "Kasaragod",
+    "Thiruvananthapuram","Kollam","Pathanamthitta","Alappuzha","Kottayam","Idukki",
+    "Ernakulam","Thrissur","Palakkad","Malappuram","Kozhikode","Wayanad","Kannur","Kasaragod"
   ];
 
   const selectedCourse = courses.find((c) => c.name === form.course);
@@ -155,18 +144,17 @@ const Header: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const { fullName, district, course, whatsappNo, qualification, date, address, pinCode } =
-      form;
+    const { fullName, district, course, whatsappNo, qualification, date, address, pinCode } = form;
 
     if (
       !fullName ||
+      !district ||
+      !course ||
       !whatsappNo ||
       !qualification ||
       !date ||
       !address ||
-      !pinCode ||
-      course === "Select" ||
-      district === "Select"
+      !pinCode
     ) {
       alert("Please fill out all fields.");
       return;
@@ -252,7 +240,7 @@ const Header: React.FC = () => {
         >
           <div
             className="h-full w-[320px] max-w-xs shadow-2xl overflow-auto"
-            style={{ backgroundColor: "#ffffff" }}
+            style={{ backgroundColor: "#ffffff" }} // force opaque white
           >
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <Logo />
@@ -271,268 +259,230 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* ===== Admission Modal (scrollable, mobile-safe) ===== */}
+        {/* ===== Admission Modal (top-most) ===== */}
         {isAdmissionOpen && (
-          <div className="fixed inset-0 z-[60]">
-            {/* backdrop */}
+          <div
+            className="fixed inset-0 z-[60] flex items-start md:items-center justify-center p-4 overflow-y-auto"
+          >
+            {/* backdrop for modal */}
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
 
-            {/* scrollable wrapper */}
-            <div className="relative flex min-h-full items-start md:items-center justify-center p-4 overflow-y-auto">
-              <div
-                id="header-form"
-                ref={admissionRef}
-                className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl max-h-[90vh] flex flex-col"
-                role="dialog"
-                aria-modal="true"
-              >
-                {/* header bar */}
-                <div className="relative bg-primary px-6 py-4">
-                  <h3 className="text-white text-xl md:text-2xl font-semibold flex items-center gap-2">
-                    <Icon icon="solar:document-add-broken" className="text-2xl" />
-                    Take Admission
-                  </h3>
-                  <button
-                    onClick={() => setIsAdmissionOpen(false)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white transition"
-                  >
-                    <Icon icon="tabler:x" className="text-2xl" />
-                  </button>
-                </div>
+            <div
+              id="header-form"
+              ref={admissionRef}
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl"
+              role="dialog"
+              aria-modal="true"
+            >
+              {/* header bar */}
+              <div className="relative bg-primary px-6 py-4">
+                <h3 className="text-white text-xl md:text-2xl font-semibold flex items-center gap-2">
+                  <Icon icon="solar:document-add-broken" className="text-2xl" />
+                  Take Admission
+                </h3>
+                <button
+                  onClick={() => setIsAdmissionOpen(false)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/90 hover:text-white transition"
+                >
+                  <Icon icon="tabler:x" className="text-2xl" />
+                </button>
+              </div>
 
-                {/* body (scrolls if content taller than 90vh) */}
-                <div className="p-6 overflow-y-auto">
-                  {/* course/admission fee pills */}
-                  {selectedCourse && selectedCourse.name !== "Select" && (
-                    <div className="mb-4 flex flex-wrap items-center gap-3">
-                      <span className="text-sm px-4 py-1.5 rounded-full bg-primary text-white font-medium shadow-[0_2px_6px_rgba(24,87,134,0.3)] border border-primary/20">
-                        Course Fee: ₹{selectedCourse.courseFee || "—"}
-                      </span>
-                      <span className="text-sm px-4 py-1.5 rounded-full bg-white text-accent font-medium shadow-[0_2px_6px_rgba(255,193,7,0.15)] border border-accent/30">
-                        Admission Fee: ₹{selectedCourse.admissionFee || "—"}
-                      </span>
+              <div className="p-6">
+                {/* course/admission fee pills */}
+                {selectedCourse && selectedCourse.name !== "Select" && (
+                  <div className="mb-4 flex flex-wrap items-center gap-3">
+                    <span className="text-sm px-4 py-1.5 rounded-full bg-primary text-white font-medium shadow-[0_2px_6px_rgba(24,87,134,0.3)] border border-primary/20">
+                      Course Fee: ₹{selectedCourse.courseFee || "—"}
+                    </span>
+                    <span className="text-sm px-4 py-1.5 rounded-full bg-white text-accent font-medium shadow-[0_2px_6px_rgba(255,193,7,0.15)] border border-accent/30">
+                      Admission Fee: ₹{selectedCourse.admissionFee || "—"}
+                    </span>
+                  </div>
+                )}
+
+                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Full Name */}
+                  <div>
+                    <label htmlFor="fullName" className="block text-sm font-medium mb-1">
+                      Full Name
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:user-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input
+                        id="fullName"
+                        type="text"
+                        required
+                        placeholder="Enter your full name"
+                        value={form.fullName}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      />
                     </div>
-                  )}
+                  </div>
 
-                  <form
-                    onSubmit={handleSubmit}
-                    className="grid grid-cols-1 md:grid-cols-3 gap-4"
-                  >
-                    {/* Full Name */}
-                    <div>
-                      <label htmlFor="fullName" className="block text-sm font-medium mb-1">
-                        Full Name
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:user-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                          id="fullName"
-                          type="text"
-                          required
-                          placeholder="Enter your full name"
-                          value={form.fullName}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        />
-                      </div>
+                  {/* WhatsApp */}
+                  <div>
+                    <label htmlFor="whatsappNo" className="block text-sm font-medium mb-1">
+                      Contact No (WhatsApp)
+                    </label>
+                    <div className="relative">
+                      <Icon icon="ic:baseline-whatsapp" className="absolute left-3 top-1/2 -translate-y-1/2" />
+                      <input
+                        id="whatsappNo"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={10}
+                        required
+                        placeholder="10-digit number"
+                        value={form.whatsappNo}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* WhatsApp */}
-                    <div>
-                      <label htmlFor="whatsappNo" className="block text-sm font-medium mb-1">
-                        Contact No (WhatsApp)
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="ic:baseline-whatsapp"
-                          className="absolute left-3 top-1/2 -translate-y-1/2"
-                        />
-                        <input
-                          id="whatsappNo"
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={10}
-                          required
-                          placeholder="10-digit number"
-                          value={form.whatsappNo}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Course */}
-                    <div>
-                      <label htmlFor="course" className="block text-sm font-medium mb-1">
-                        Course
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:book-2-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <select
-                          id="course"
-                          required
-                          value={form.course}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-10 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        >
-                          <option value="Select">Select</option>
-                          {courses.map((c) => (
-                            <option key={c.name} value={c.name}>
-                              {c.name}
-                            </option>
-                          ))}
-                        </select>
-                        <Icon
-                          icon="mdi:chevron-down"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Qualification */}
-                    <div>
-                      <label
-                        htmlFor="qualification"
-                        className="block text-sm font-medium mb-1"
+                  {/* Course */}
+                  <div>
+                    <label htmlFor="course" className="block text-sm font-medium mb-1">
+                      Course
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:book-2-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <select
+                        id="course"
+                        required
+                        value={form.course}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-10 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
                       >
-                        Qualification
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:certificate-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                          id="qualification"
-                          type="text"
-                          required
-                          placeholder="e.g., SSLC, +2, Degree"
-                          value={form.qualification}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        />
-                      </div>
+                        <option value="Select">Select</option>
+                        {courses.map((c) => (
+                          <option key={c.name} value={c.name}>
+                            {c.name}
+                          </option>
+                        ))}
+                      </select>
+                      <Icon icon="mdi:chevron-down" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                     </div>
+                  </div>
 
-                    {/* Date */}
-                    <div>
-                      <label htmlFor="date" className="block text-sm font-medium mb-1">
-                        Date
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:calendar-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                          id="date"
-                          type="date"
-                          required
-                          value={form.date}
-                          disabled
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 bg-gray-100 cursor-not-allowed shadow-sm"
-                        />
-                      </div>
+                  {/* Qualification */}
+                  <div>
+                    <label htmlFor="qualification" className="block text-sm font-medium mb-1">
+                      Qualification
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:certificate-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input
+                        id="qualification"
+                        type="text"
+                        required
+                        placeholder="e.g., SSLC, +2, Degree"
+                        value={form.qualification}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* Address */}
-                    <div className="md:col-span-2">
-                      <label htmlFor="address" className="block text-sm font-medium mb-1">
-                        Address
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:home-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                          id="address"
-                          type="text"
-                          required
-                          placeholder="House/Street, City"
-                          value={form.address}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        />
-                      </div>
+                  {/* Date */}
+                  <div>
+                    <label htmlFor="date" className="block text-sm font-medium mb-1">
+                      Date
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:calendar-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input
+                        id="date"
+                        type="date"
+                        required
+                        value={form.date}
+                        disabled
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 bg-gray-100 cursor-not-allowed shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* Pin Code */}
-                    <div>
-                      <label htmlFor="pinCode" className="block text-sm font-medium mb-1">
-                        Pin Code
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:location-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <input
-                          id="pinCode"
-                          type="text"
-                          inputMode="numeric"
-                          maxLength={6}
-                          required
-                          placeholder="6-digit Pin Code"
-                          value={form.pinCode}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        />
-                      </div>
+                  {/* Address */}
+                  <div className="md:col-span-2">
+                    <label htmlFor="address" className="block text-sm font-medium mb-1">
+                      Address
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:home-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input
+                        id="address"
+                        type="text"
+                        required
+                        placeholder="House/Street, City"
+                        value={form.address}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* District */}
-                    <div>
-                      <label htmlFor="district" className="block text-sm font-medium mb-1">
-                        District
-                      </label>
-                      <div className="relative">
-                        <Icon
-                          icon="solar:map-linear"
-                          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-                        />
-                        <select
-                          id="district"
-                          required
-                          value={form.district}
-                          onChange={onChange}
-                          className="w-full border rounded-xl pl-10 pr-10 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
-                        >
-                          <option value="Select">Select</option>
-                          {districts.map((d) => (
-                            <option key={d} value={d}>
-                              {d}
-                            </option>
-                          ))}
-                        </select>
-                        <Icon
-                          icon="mdi:chevron-down"
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-                        />
-                      </div>
+                  {/* Pin Code */}
+                  <div>
+                    <label htmlFor="pinCode" className="block text-sm font-medium mb-1">
+                      Pin Code
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:location-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <input
+                        id="pinCode"
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={6}
+                        required
+                        placeholder="6-digit Pin Code"
+                        value={form.pinCode}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+                      />
                     </div>
+                  </div>
 
-                    {/* Submit */}
-                    <div className="md:col-span-3 mt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
-                      <div className="text-xs text-midnight_text/70">
-                        By submitting, details will open in WhatsApp chat.
-                      </div>
-                      <button
-                        type="submit"
-                        className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-xl font-semibold shadow-md hover:bg-secondary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                  {/* District */}
+                  <div>
+                    <label htmlFor="district" className="block text-sm font-medium mb-1">
+                      District
+                    </label>
+                    <div className="relative">
+                      <Icon icon="solar:map-linear" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
+                      <select
+                        id="district"
+                        required
+                        value={form.district}
+                        onChange={onChange}
+                        className="w-full border rounded-xl pl-10 pr-10 py-2.5 appearance-none focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
                       >
-                        <Icon icon="mdi:send" className="text-lg" />
-                        Submit & Send via WhatsApp
-                      </button>
+                        <option value="Select">Select</option>
+                        {districts.map((d) => (
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
+                        ))}
+                      </select>
+                      <Icon icon="mdi:chevron-down" className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
                     </div>
-                  </form>
-                </div>
+                  </div>
+
+                  {/* Submit */}
+                  <div className="md:col-span-3 mt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div className="text-xs text-midnight_text/70">
+                      By submitting, details will open in WhatsApp chat.
+                    </div>
+                    <button
+                      type="submit"
+                      className="inline-flex items-center gap-2 bg-primary text-white px-6 py-2.5 rounded-xl font-semibold shadow-md hover:bg-secondary transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                    >
+                      <Icon icon="mdi:send" className="text-lg" />
+                      Submit &amp; Send via WhatsApp
+                    </button>
+                  </div>
+                </form>
               </div>
             </div>
           </div>

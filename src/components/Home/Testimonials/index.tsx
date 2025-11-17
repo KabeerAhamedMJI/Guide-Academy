@@ -7,7 +7,9 @@ import "slick-carousel/slick/slick-theme.css";
 import React from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { getImagePrefix } from "@/utils/util"; // ✅ use shared util
+
+// 🔧 FIX: no leading slash here, let imgSrc handle it
+export const getImagePrefix = () => "";
 
 const Testimonial = () => {
   const settings = {
@@ -32,7 +34,7 @@ const Testimonial = () => {
       profession: "MTTC Student",
       comment:
         "Teachers here explain things simply and are always ready to help. I enjoyed the classes.",
-      imgSrc: "images/testimonial/user3.png", // ✅ no leading slash
+      imgSrc: "/images/testimonial/user3.png",
       gender: "female",
     },
     {
@@ -40,7 +42,7 @@ const Testimonial = () => {
       profession: "Arabic TTC Student",
       comment:
         "Good practical classes and friendly staff. I learned useful skills and felt supported throughout.",
-      imgSrc: "images/testimonial/user2.png",
+      imgSrc: "/images/testimonial/user2.png",
       gender: "female",
     },
     {
@@ -48,7 +50,7 @@ const Testimonial = () => {
       profession: "BA Psychology Student",
       comment:
         "Nice course, helpful mentors and real projects. I feel more confident applying for jobs now.",
-      imgSrc: "images/testimonial/user1.png",
+      imgSrc: "/images/testimonial/user1.png",
       gender: "male",
     },
     {
@@ -56,7 +58,7 @@ const Testimonial = () => {
       profession: "Counselling Psychology Student",
       comment:
         "The sessions were very interactive. Teachers are patient and explain concepts clearly with real-life examples.",
-      imgSrc: "images/testimonial/user4.png",
+      imgSrc: "/images/testimonial/user4.png",
       gender: "female",
     },
     {
@@ -64,7 +66,7 @@ const Testimonial = () => {
       profession: "Hospital Administration Student",
       comment:
         "The course gave me a clear idea about hospital management. The faculty and support team were really good.",
-      imgSrc: "images/testimonial/user5.png",
+      imgSrc: "/images/testimonial/user5.png",
       gender: "male",
     },
     {
@@ -72,7 +74,7 @@ const Testimonial = () => {
       profession: "Accounting Student",
       comment:
         "Very good teaching and easy to understand. The practical examples helped me a lot in learning accounting basics.",
-      imgSrc: "images/testimonial/user6.png",
+      imgSrc: "/images/testimonial/user6.png",
       gender: "female",
     },
   ];
@@ -97,7 +99,7 @@ const Testimonial = () => {
 
     return (
       <Image
-        src={`${getImagePrefix()}${imgSrc}`} // ✅ now becomes /images/...
+        src={`${getImagePrefix()}${imgSrc}`}
         alt={name}
         width={72}
         height={72}
@@ -141,12 +143,14 @@ const Testimonial = () => {
                 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(24,87,134,0.08)] 
                 shadow-[0_2px_15px_rgba(0,0,0,0.04)]`}
               >
+                {/* Avatar */}
                 <div className="flex justify-center mt-6">
                   <div className="w-18 h-18 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden">
                     {renderAvatar(items.imgSrc, items.name, items.gender)}
                   </div>
                 </div>
 
+                {/* Quote */}
                 <div className="flex-1 flex flex-col justify-center items-center px-4 mt-4">
                   <div className="text-primary/20 mb-2">
                     <Icon icon="fa-solid:quote-left" width="26" height="26" />
@@ -156,8 +160,10 @@ const Testimonial = () => {
                   </p>
                 </div>
 
+                {/* Divider */}
                 <div className="border-t border-gray-100 mx-8 my-4" />
 
+                {/* Footer */}
                 <div className="flex flex-col items-center pb-6">
                   <h3 className="text-base font-semibold text-gray-800">
                     {items.name}
@@ -196,6 +202,7 @@ const Testimonial = () => {
         </Slider>
       </div>
 
+      {/* Slick dots */}
       <style jsx>{`
         :global(.slick-dots) {
           bottom: -28px;
