@@ -7,7 +7,7 @@ import "slick-carousel/slick/slick-theme.css";
 import React from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { getImagePrefix } from "@/utils/util";
+import { getImagePrefix } from "@/utils/util"; // ✅ use shared util
 
 const Testimonial = () => {
   const settings = {
@@ -26,14 +26,13 @@ const Testimonial = () => {
     ],
   };
 
-  // IMPORTANT: no leading "/" now
   const testimonials = [
     {
       name: "Athira M.",
       profession: "MTTC Student",
       comment:
         "Teachers here explain things simply and are always ready to help. I enjoyed the classes.",
-      imgSrc: "images/testimonial/user3.png",
+      imgSrc: "images/testimonial/user3.png", // ✅ no leading slash
       gender: "female",
     },
     {
@@ -98,7 +97,7 @@ const Testimonial = () => {
 
     return (
       <Image
-        src={`${getImagePrefix()}${imgSrc}`} // → "/images/testimonial/..."
+        src={`${getImagePrefix()}${imgSrc}`} // ✅ now becomes /images/...
         alt={name}
         width={72}
         height={72}
@@ -142,14 +141,12 @@ const Testimonial = () => {
                 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(24,87,134,0.08)] 
                 shadow-[0_2px_15px_rgba(0,0,0,0.04)]`}
               >
-                {/* Avatar */}
                 <div className="flex justify-center mt-6">
                   <div className="w-18 h-18 rounded-full bg-white flex items-center justify-center border border-gray-100 shadow-sm overflow-hidden">
                     {renderAvatar(items.imgSrc, items.name, items.gender)}
                   </div>
                 </div>
 
-                {/* Quote */}
                 <div className="flex-1 flex flex-col justify-center items-center px-4 mt-4">
                   <div className="text-primary/20 mb-2">
                     <Icon icon="fa-solid:quote-left" width="26" height="26" />
@@ -159,10 +156,8 @@ const Testimonial = () => {
                   </p>
                 </div>
 
-                {/* Divider */}
                 <div className="border-t border-gray-100 mx-8 my-4" />
 
-                {/* Footer */}
                 <div className="flex flex-col items-center pb-6">
                   <h3 className="text-base font-semibold text-gray-800">
                     {items.name}
@@ -201,7 +196,6 @@ const Testimonial = () => {
         </Slider>
       </div>
 
-      {/* Slick dots */}
       <style jsx>{`
         :global(.slick-dots) {
           bottom: -28px;
