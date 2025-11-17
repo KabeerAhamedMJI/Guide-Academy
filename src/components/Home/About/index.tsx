@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect } from "react";
 import Image from "next/image";
-import { getImagePrefix } from "@/utils/util";
+export const getImagePrefix = () => "/";
 
 const About = () => {
   const openHeaderForm = React.useCallback(() => {

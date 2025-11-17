@@ -1,6 +1,6 @@
 "use client";
 
-import { getImagePrefix } from "@/utils/util";
+export const getImagePrefix = () => "/";
 import Image from "next/image";
 import { useState } from "react";
 import { MapPin, Mail, Phone, Send } from "lucide-react";

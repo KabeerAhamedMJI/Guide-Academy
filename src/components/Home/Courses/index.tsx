@@ -6,7 +6,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { getImagePrefix } from "@/utils/util";
+export const getImagePrefix = () => "/";
+
 
 type CourseItem = {
   heading: string;

@@ -1,4 +1,5 @@
-import { getImagePrefix } from "@/utils/util";
+// import { getImagePrefix } from "@/utils/util";
+export const getImagePrefix = () => "/";
 import Image from "next/image";
 import Link from "next/link";
 
