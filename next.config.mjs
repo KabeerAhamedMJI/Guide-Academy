@@ -1,11 +1,11 @@
 /** @type {import('next').NextConfig} */
-const isProd = process.env.NODE_ENV === "production";
-
 const nextConfig = {
-  output: "export",
-  basePath: isProd ? "/Guide-Academy" : "",
-  assetPrefix: isProd ? "/Guide-Academy/" : "",
+  reactStrictMode: true,
+  // output: "export" വേണ്ട
+  // basePath വേണ്ട
+  // assetPrefix വേണ്ട
   images: {
+    // ഇത് വേണമെങ്കിൽ വെക്കാം, ഇല്ലെങ്കിലും പ്രശ്നമില്ല
     unoptimized: true,
   },
 };
