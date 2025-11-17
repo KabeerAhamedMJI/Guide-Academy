@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Your template's custom CSS (Bootstrap-like utility classes etc.) */
+/* your template styles */
 @import "../Style/style.css";
 
 html {

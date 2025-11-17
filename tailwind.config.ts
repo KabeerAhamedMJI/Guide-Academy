@@ -7,6 +7,7 @@ const config: Config = {
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/Style/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
@@ -17,10 +18,12 @@ const config: Config = {
         "testimonial-shadow2": "5.54348px 38.8043px 110.87px rgba(89,104,118,.15)",
       },
       colors: {
+        // brand colors
         primary: "#185786",
         secondary: "#185786",
         accent: "#F39C12",
 
+        // existing keys you mentioned
         grey: "#57595f",
         slateGray: "#f6faff",
         deepSlate: "#d5effa",
