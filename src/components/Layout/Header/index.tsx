@@ -23,7 +23,6 @@ const Header: React.FC = () => {
   const handleScroll = () => setSticky(window.scrollY >= 80);
 
   const handleClickOutside = (event: MouseEvent) => {
-    // close mobile menu when clicking outside it
     if (
       mobileMenuRef.current &&
       !mobileMenuRef.current.contains(event.target as Node) &&
@@ -31,7 +30,6 @@ const Header: React.FC = () => {
     )
       setNavbarOpen(false);
 
-    // close admission modal when clicking outside it
     if (
       admissionRef.current &&
       !admissionRef.current.contains(event.target as Node) &&
@@ -49,20 +47,17 @@ const Header: React.FC = () => {
     };
   }, [navbarOpen, isAdmissionOpen]);
 
-  // lock body scroll when overlays open
   useEffect(() => {
     if (navbarOpen || isAdmissionOpen) document.body.style.overflow = "hidden";
     else document.body.style.overflow = "";
   }, [navbarOpen, isAdmissionOpen]);
 
-  // open admission modal from other places
   useEffect(() => {
     const open = (_e: Event) => setIsAdmissionOpen(true);
     window.addEventListener("open-header-form", open);
     return () => window.removeEventListener("open-header-form", open);
   }, []);
 
-  // When admission opens, scroll into view and focus first field
   useEffect(() => {
     if (!isAdmissionOpen) return;
     const t = setTimeout(() => {
@@ -74,7 +69,6 @@ const Header: React.FC = () => {
     return () => clearTimeout(t);
   }, [isAdmissionOpen]);
 
-  // ==== Admission Form data & handlers ====
   const TARGET_WHATSAPP = "919072930247";
 
   const [form, setForm] = useState({
@@ -185,7 +179,6 @@ const Header: React.FC = () => {
             ))}
           </nav>
 
-          {/* Right side buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsAdmissionOpen(true)}
@@ -195,7 +188,6 @@ const Header: React.FC = () => {
               <span>Admission Form</span>
             </button>
 
-            {/* Mobile toggle */}
             <button
               onClick={() => setNavbarOpen(!navbarOpen)}
               className="block lg:hidden p-2 rounded-lg"
@@ -208,7 +200,6 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* ===== Mobile overlay + drawer (solid white) ===== */}
         {navbarOpen && (
           <div
             className="fixed inset-0 bg-black/40 z-40"
@@ -226,7 +217,7 @@ const Header: React.FC = () => {
         >
           <div
             className="h-full w-[320px] max-w-xs shadow-2xl overflow-auto"
-            style={{ backgroundColor: "#ffffff" }} // force opaque white
+            style={{ backgroundColor: "#ffffff" }}
           >
             <div className="flex items-center justify-between p-4 border-b border-gray-200">
               <Logo />
@@ -245,20 +236,19 @@ const Header: React.FC = () => {
           </div>
         </div>
 
-        {/* ===== Admission Modal (top-most) ===== */}
+        {/* ===== UPDATED ADMISSION MODAL (NOW SCROLLABLE) ===== */}
         {isAdmissionOpen && (
-          <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-            {/* backdrop for modal */}
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+          <div className="fixed inset-0 z-[60] flex items-start md:items-center justify-center p-4 overflow-y-auto">
+            
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
 
             <div
               id="header-form"
               ref={admissionRef}
-              className="relative w-full max-w-4xl rounded-2xl bg-white shadow-2xl overflow-hidden"
+              className="relative w-full max-w-4xl max-h-[90vh] overflow-y-auto rounded-2xl bg-white shadow-2xl"
               role="dialog"
               aria-modal="true"
             >
-              {/* header bar */}
               <div className="relative bg-primary px-6 py-4">
                 <h3 className="text-white text-xl md:text-2xl font-semibold flex items-center gap-2">
                   <Icon icon="solar:document-add-broken" className="text-2xl" />
@@ -273,7 +263,6 @@ const Header: React.FC = () => {
               </div>
 
               <div className="p-6">
-                {/* course/admission fee pills */}
                 {selectedCourse && selectedCourse.name !== "Select" && (
                   <div className="mb-4 flex flex-wrap items-center gap-3">
                     <span className="text-sm px-4 py-1.5 rounded-full bg-primary text-white font-medium shadow-[0_2px_6px_rgba(24,87,134,0.3)] border border-primary/20">
@@ -286,7 +275,6 @@ const Header: React.FC = () => {
                 )}
 
                 <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {/* Full Name */}
                   <div>
                     <label htmlFor="fullName" className="block text-sm font-medium mb-1">
                       Full Name
@@ -305,7 +293,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* WhatsApp */}
                   <div>
                     <label htmlFor="whatsappNo" className="block text-sm font-medium mb-1">
                       Contact No (WhatsApp)
@@ -326,7 +313,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Course */}
                   <div>
                     <label htmlFor="course" className="block text-sm font-medium mb-1">
                       Course
@@ -351,7 +337,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Qualification */}
                   <div>
                     <label htmlFor="qualification" className="block text-sm font-medium mb-1">
                       Qualification
@@ -370,7 +355,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Date */}
                   <div>
                     <label htmlFor="date" className="block text-sm font-medium mb-1">
                       Date
@@ -388,7 +372,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Address */}
                   <div className="md:col-span-2">
                     <label htmlFor="address" className="block text-sm font-medium mb-1">
                       Address
@@ -407,7 +390,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Pin Code */}
                   <div>
                     <label htmlFor="pinCode" className="block text-sm font-medium mb-1">
                       Pin Code
@@ -428,7 +410,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* District */}
                   <div>
                     <label htmlFor="district" className="block text-sm font-medium mb-1">
                       District
@@ -453,7 +434,6 @@ const Header: React.FC = () => {
                     </div>
                   </div>
 
-                  {/* Submit */}
                   <div className="md:col-span-3 mt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div className="text-xs text-midnight_text/70">
                       By submitting, details will open in WhatsApp chat.
@@ -471,7 +451,7 @@ const Header: React.FC = () => {
             </div>
           </div>
         )}
-        {/* ===== end admission modal ===== */}
+        {/* ===== END MODAL ===== */}
       </div>
     </header>
   );
